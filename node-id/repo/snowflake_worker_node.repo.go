@@ -10,6 +10,9 @@ import (
 
 // SnowflakeWorkerNodeRepo repo
 type SnowflakeWorkerNodeRepo interface {
-	StoreNodeID(ctx context.Context, dataModel *entities.SnowflakeWorkerNode) (err error)
+	Create(ctx context.Context, dataModel *entities.SnowflakeWorkerNode) error
+	Update(ctx context.Context, dataModel *entities.SnowflakeWorkerNode) error
+	QueryOneByNodeUUID(ctx context.Context, nodeUUID string) (dataModel *entities.SnowflakeWorkerNode, isNotFound bool, err error)
 	QueryMaxNodeIDByInstanceID(ctx context.Context, instanceID string) (dataModels []*entities.InstanceMaxNodeID, err error)
+	QueryIdleNodeIDByInstanceID(ctx context.Context, req *entities.InstanceIdleNodeIDReq) (dataModel *entities.InstanceMaxNodeID, isNotFound bool, err error)
 }

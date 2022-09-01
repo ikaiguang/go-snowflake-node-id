@@ -47,36 +47,6 @@ func (s *snowflakeWorkerNodeRepo) CreateWithDBConn(ctx context.Context, dbConn *
 	return s.create(ctx, dbConn, dataModel)
 }
 
-// StoreNodeID insert one
-func (s *snowflakeWorkerNodeRepo) StoreNodeID(ctx context.Context, dataModel *entities.SnowflakeWorkerNode) (err error) {
-	err = s.dbConn.WithContext(ctx).Create(dataModel).Error
-	if err == nil {
-		return err
-	}
-	createdErr := err
-
-	// 先查，在插入
-	var newDataModel = &entities.SnowflakeWorkerNode{}
-	err = s.dbConn.WithContext(ctx).
-		Where("node_uuid = ?", dataModel.NodeUuid).
-		First(newDataModel).Error
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return createdErr
-		}
-		return err
-	}
-	dataModel.Id = newDataModel.Id
-	err = s.dbConn.WithContext(ctx).
-		Table(s.SnowflakeWorkerNodeSchema.TableName()).
-		Where("id = ?", newDataModel.Id).
-		Save(dataModel).Error
-	if err != nil {
-		return err
-	}
-	return
-}
-
 // existCreate exist create
 func (s *snowflakeWorkerNodeRepo) existCreate(ctx context.Context, dbConn *gorm.DB, dataModel *entities.SnowflakeWorkerNode) (anotherModel *entities.SnowflakeWorkerNode, isNotFound bool, err error) {
 	anotherModel = new(entities.SnowflakeWorkerNode)
@@ -129,7 +99,7 @@ func (s *snowflakeWorkerNodeRepo) CreateInBatchesWithDBConn(ctx context.Context,
 func (s *snowflakeWorkerNodeRepo) update(ctx context.Context, dbConn *gorm.DB, dataModel *entities.SnowflakeWorkerNode) (err error) {
 	err = dbConn.WithContext(ctx).
 		Table(s.SnowflakeWorkerNodeSchema.TableName()).
-		Where("id = ?", dataModel.Id).
+		// Where("id = ?", dataModel.Id).
 		Save(dataModel).Error
 	if err != nil {
 		return err
@@ -204,6 +174,23 @@ func (s *snowflakeWorkerNodeRepo) QueryOneByIdWithDBConn(ctx context.Context, db
 	return s.queryOneById(ctx, dbConn, id)
 }
 
+// QueryOneByNodeUUID query one by id
+func (s *snowflakeWorkerNodeRepo) QueryOneByNodeUUID(ctx context.Context, nodeUUID string) (dataModel *entities.SnowflakeWorkerNode, isNotFound bool, err error) {
+	dataModel = new(entities.SnowflakeWorkerNode)
+	err = s.dbConn.WithContext(ctx).
+		Table(s.SnowflakeWorkerNodeSchema.TableName()).
+		Where("node_uuid = ?", nodeUUID).
+		First(dataModel).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = nil
+			isNotFound = true
+		}
+		return
+	}
+	return
+}
+
 // QueryMaxNodeIDByInstanceID 查询实例的最大ID
 func (s *snowflakeWorkerNodeRepo) QueryMaxNodeIDByInstanceID(ctx context.Context, instanceID string) (dataModels []*entities.InstanceMaxNodeID, err error) {
 	err = s.dbConn.WithContext(ctx).
@@ -211,6 +198,26 @@ func (s *snowflakeWorkerNodeRepo) QueryMaxNodeIDByInstanceID(ctx context.Context
 		Table(s.SnowflakeWorkerNodeSchema.TableName()).
 		Where("instance_id = ?", instanceID).
 		Find(&dataModels).Error
+	return
+}
+
+// QueryIdleNodeIDByInstanceID 查询实例的闲置ID
+func (s *snowflakeWorkerNodeRepo) QueryIdleNodeIDByInstanceID(ctx context.Context, req *entities.InstanceIdleNodeIDReq) (dataModel *entities.InstanceMaxNodeID, isNotFound bool, err error) {
+	dataModel = &entities.InstanceMaxNodeID{}
+	err = s.dbConn.WithContext(ctx).
+		Select("instance_id, snowflake_node_id").
+		Table(s.SnowflakeWorkerNodeSchema.TableName()).
+		Where("instance_id = ?", req.InstanceId).
+		Where("instance_extend_time <= ?", req.MaxInstanceExtendTime).
+		Order("id").
+		First(dataModel).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = nil
+			isNotFound = true
+		}
+		return
+	}
 	return
 }
 

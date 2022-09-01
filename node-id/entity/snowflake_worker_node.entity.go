@@ -38,3 +38,9 @@ type InstanceMaxNodeID struct {
 	InstanceId      string `gorm:"column:instance_id" json:"instance_id"`             // 实例ID
 	SnowflakeNodeId int64  `gorm:"column:snowflake_node_id" json:"snowflake_node_id"` // 雪花算法节点id
 }
+
+// InstanceIdleNodeIDReq 获取闲置的NodeID
+type InstanceIdleNodeIDReq struct {
+	InstanceId            string
+	MaxInstanceExtendTime time.Time
+}

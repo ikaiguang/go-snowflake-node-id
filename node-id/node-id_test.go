@@ -21,6 +21,7 @@ func Test_worker_GetNodeId(t *testing.T) {
 	require.NoError(t, err)
 	workerHandler, err := NewWorker(
 		WithMaxNodeID(3),
+		WithIdleDuration(_idleDuration),
 		WithDBConn(dbConn),
 	)
 	require.NoError(t, err)
