@@ -1,14 +1,19 @@
 package nodeid
 
 import (
+	"context"
 	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
 	mysqlutil "github.com/ikaiguang/go-srv-kit/data/mysql"
 	"gorm.io/gorm"
+
+	apiv1 "github.com/ikaiguang/go-snowflake-node-id/api"
 )
 
-// Interface ...
-type Interface interface {
+// WorkerRepo ...
+type WorkerRepo interface {
+	GetNodeId(ctx context.Context, req *apiv1.GetNodeIdReq) (resp *apiv1.SnowflakeWorkerNode, err error)
+	ExtendNodeId(ctx context.Context, req *apiv1.ExtendNodeIdReq) (resp *apiv1.Result, err error)
 }
 
 // NewMysqlDB ...

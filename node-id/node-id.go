@@ -56,7 +56,7 @@ func NewWorker(opts ...Option) (*worker, error) {
 
 // GetNodeId 获取节点ID
 func (s *worker) GetNodeId(ctx context.Context, req *apiv1.GetNodeIdReq) (resp *apiv1.SnowflakeWorkerNode, err error) {
-	req.Id = strings.TrimSpace(req.Id)
+	req.InstanceId = strings.TrimSpace(req.InstanceId)
 	if len(req.Endpoints) == 0 {
 		req.Endpoints = []string{}
 	}
@@ -82,15 +82,60 @@ func (s *worker) GetNodeId(ctx context.Context, req *apiv1.GetNodeIdReq) (resp *
 		return resp, err
 	}
 
+	// 获取缺失的ID
+	// 只有人为删除数据库数据的情况，才需补充此步骤
+	//resp, hasValidID, err = s.getMissingNodeID(ctx, req)
+	//if err != nil {
+	//	return resp, err
+	//}
+	//if hasValidID {
+	//	return resp, err
+	//}
+
 	reason := apiv1.ERROR_CANNOT_FOUNT_USABLE_ID
 	message := "未找到可用的节点ID"
 	err = errorutil.NotFound(reason.String(), message)
 	return resp, err
 }
 
+// ExtendNodeId 续期
+func (s *worker) ExtendNodeId(ctx context.Context, req *apiv1.ExtendNodeIdReq) (resp *apiv1.Result, err error) {
+	queryReq := &entities.SnowflakeWorkerNode{
+		Id:              req.Id,
+		InstanceId:      req.InstanceId,
+		SnowflakeNodeId: req.NodeId,
+	}
+	queryReq.NodeUuid = queryReq.GenNodeUUID()
+	dataModel, isNotFound, err := s.nodeRepo.QueryOneByIDAndNodeUUID(ctx, queryReq)
+	if err != nil {
+		reason := errorv1.ERROR_INTERNAL_SERVER.String()
+		message := "服务内部错误"
+		err = errorutil.InternalServer(reason, message, err)
+		return resp, err
+	}
+	if isNotFound {
+		reason := apiv1.ERROR_CANNOT_FOUNT_EXTEND_ID.String()
+		message := "未找到续期的节点ID"
+		err = errorutil.NotFound(reason, message, err)
+		return resp, err
+	}
+
+	// 续期
+	err = s.nodeRepo.ExtendNodeID(ctx, dataModel)
+	if err != nil {
+		reason := errorv1.ERROR_INTERNAL_SERVER.String()
+		message := "服务内部错误"
+		err = errorutil.InternalServer(reason, message, err)
+		return resp, err
+	}
+
+	resp = &apiv1.Result{Success: true}
+	return resp, err
+}
+
 // getMissingNodeID 获取缺失的ID
 func (s *worker) getMissingNodeID(ctx context.Context, req *apiv1.GetNodeIdReq) (resp *apiv1.SnowflakeWorkerNode, hasValidID bool, err error) {
-
+	// todo 未实现
 	return resp, hasValidID, err
 }
 
@@ -98,7 +143,7 @@ func (s *worker) getMissingNodeID(ctx context.Context, req *apiv1.GetNodeIdReq) 
 func (s *worker) getIdleNodeID(ctx context.Context, req *apiv1.GetNodeIdReq) (resp *apiv1.SnowflakeWorkerNode, hasValidID bool, err error) {
 	// 获取有效的ID
 	idleReq := &entities.InstanceIdleNodeIDReq{
-		InstanceId:            req.Id,
+		InstanceId:            req.InstanceId,
 		MaxInstanceExtendTime: time.Now().Add(-s.opt.idleDuration),
 	}
 
@@ -150,7 +195,7 @@ func (s *worker) getIdleNodeID(ctx context.Context, req *apiv1.GetNodeIdReq) (re
 // getLastNodeID 获取下一个ID
 func (s *worker) getLastNodeID(ctx context.Context, req *apiv1.GetNodeIdReq) (resp *apiv1.SnowflakeWorkerNode, hasValidID bool, err error) {
 	// 获取有效的ID
-	ids, err := s.nodeRepo.QueryMaxNodeIDByInstanceID(ctx, req.Id)
+	ids, err := s.nodeRepo.QueryMaxNodeIDByInstanceID(ctx, req.InstanceId)
 	if err != nil {
 		reason := errorv1.ERROR_INTERNAL_SERVER.String()
 		message := "服务内部错误"
@@ -186,9 +231,9 @@ func (s *worker) assembleNodeId(ctx context.Context, req *apiv1.GetNodeIdReq, no
 	dataModel = &entities.SnowflakeWorkerNode{
 		InstanceLaunchTime:   now,
 		InstanceExtendTime:   now,
-		InstanceId:           req.Id,
+		InstanceId:           req.InstanceId,
 		SnowflakeNodeId:      nodeID,
-		InstanceName:         req.Name,
+		InstanceName:         req.InstanceName,
 		InstanceEndpointList: "",
 		InstanceMetadata:     "",
 		CreatedTime:          now,

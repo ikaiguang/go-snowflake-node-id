@@ -8,6 +8,7 @@ import (
 	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
 	gorm "gorm.io/gorm"
 	"strings"
+	"time"
 
 	entities "github.com/ikaiguang/go-snowflake-node-id/node-id/entity"
 	repos "github.com/ikaiguang/go-snowflake-node-id/node-id/repo"
@@ -117,6 +118,18 @@ func (s *snowflakeWorkerNodeRepo) UpdateWithDBConn(ctx context.Context, dbConn *
 	return s.update(ctx, dbConn, dataModel)
 }
 
+// ExtendNodeID 续期
+func (s *snowflakeWorkerNodeRepo) ExtendNodeID(ctx context.Context, dataModel *entities.SnowflakeWorkerNode) (err error) {
+	err = s.dbConn.WithContext(ctx).
+		Table(s.SnowflakeWorkerNodeSchema.TableName()).
+		Where("id = ?", dataModel.Id).
+		UpdateColumn("instance_extend_time", time.Now()).Error
+	if err != nil {
+		return err
+	}
+	return
+}
+
 // existUpdate exist update
 func (s *snowflakeWorkerNodeRepo) existUpdate(ctx context.Context, dbConn *gorm.DB, dataModel *entities.SnowflakeWorkerNode) (anotherModel *entities.SnowflakeWorkerNode, isNotFound bool, err error) {
 	anotherModel = new(entities.SnowflakeWorkerNode)
@@ -191,6 +204,24 @@ func (s *snowflakeWorkerNodeRepo) QueryOneByNodeUUID(ctx context.Context, nodeUU
 	return
 }
 
+// QueryOneByIDAndNodeUUID query one by id
+func (s *snowflakeWorkerNodeRepo) QueryOneByIDAndNodeUUID(ctx context.Context, req *entities.SnowflakeWorkerNode) (dataModel *entities.SnowflakeWorkerNode, isNotFound bool, err error) {
+	dataModel = new(entities.SnowflakeWorkerNode)
+	err = s.dbConn.WithContext(ctx).
+		Table(s.SnowflakeWorkerNodeSchema.TableName()).
+		Where("id = ?", req.Id).
+		Where("node_uuid = ?", req.NodeUuid).
+		First(dataModel).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			err = nil
+			isNotFound = true
+		}
+		return
+	}
+	return
+}
+
 // QueryMaxNodeIDByInstanceID 查询实例的最大ID
 func (s *snowflakeWorkerNodeRepo) QueryMaxNodeIDByInstanceID(ctx context.Context, instanceID string) (dataModels []*entities.InstanceMaxNodeID, err error) {
 	err = s.dbConn.WithContext(ctx).
@@ -209,7 +240,6 @@ func (s *snowflakeWorkerNodeRepo) QueryIdleNodeIDByInstanceID(ctx context.Contex
 		Table(s.SnowflakeWorkerNodeSchema.TableName()).
 		Where("instance_id = ?", req.InstanceId).
 		Where("instance_extend_time <= ?", req.MaxInstanceExtendTime).
-		Order("id").
 		First(dataModel).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {

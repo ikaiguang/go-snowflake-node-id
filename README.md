@@ -10,12 +10,14 @@
 
 数据存储组件：数据库
 
-数据库操作使用了[GORM](https://gorm.io/)，故支持一下的数据库：
+数据库操作使用了[GORM](https://gorm.io/)，支持一下的数据库：
+
+> 使用示例，请参考：[./node-id/node-id_test.go](node-id/node-id_test.go)
 
 - [x] `MySQL`
-- [ ] `PostgreSQL`
-- [ ] `SQLite`
-- [ ] `SQL Server`
+- [x] `PostgreSQL`
+- [x] `SQLite`
+- [x] `SQL Server`
 
 ```mysql
 
