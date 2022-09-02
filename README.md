@@ -6,20 +6,6 @@
 
 主要功能：提供全局唯一的**节点ID**
 
-## 目录说明
-
-核心代码所在位置： 
-
-- [./node-id](./node-id)
-- [./api](./api)
-
-其他的目录为：`kratos`框架服务
-
-服务配置：[./config](./configs)
-
-- 开放接口: `HTTP` : [HTTP] server listening on: [::]:8081
-- 开放接口: `GRPC` : [gRPC] server listening on: [::]:9091
-
 ## 使用示例
 
 ```text
@@ -103,3 +89,23 @@ CREATE TABLE snowflake_worker_node
 ## 算法流程图
 
 ![雪花算法ID节点颁发流程图](./statics/雪花算法ID节点颁发流程图@开广.drawio.png)
+
+## 作为服务使用
+
+node-id核心代码所在位置：
+
+- [./node-id](./node-id)
+- [./api](./api)
+
+其他的目录为：`kratos`框架服务
+
+服务配置：[./config](./configs)
+
+- 开放接口: `HTTP` : [HTTP] server listening on: [::]:8081
+- 开放接口: `GRPC` : [gRPC] server listening on: [::]:9091
+
+### 服务配置
+
+一： 修改数据库配置 [./configs/config_data.yaml](runtime/config_data.yaml)
+
+修改数据库配置 : `data.mysql.dsn` : 账户、密码、数据库

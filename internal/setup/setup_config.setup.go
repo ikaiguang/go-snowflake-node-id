@@ -5,12 +5,11 @@ import (
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
 	"github.com/go-kratos/kratos/v2/log"
-	pkgerrors "github.com/pkg/errors"
-	stdlog "log"
-
 	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 	envv1 "github.com/ikaiguang/go-srv-kit/api/env/v1"
 	apputil "github.com/ikaiguang/go-srv-kit/kratos/app"
+	pkgerrors "github.com/pkg/errors"
+	stdlog "log"
 
 	configv1 "github.com/ikaiguang/go-snowflake-node-id/api/config/v1"
 )
@@ -106,6 +105,18 @@ func (s *configuration) New(opts ...config.Option) (err error) {
 
 	// 初始化
 	s.initialization()
+
+	// App配置
+	if s.conf.App == nil {
+		err = pkgerrors.New("[请配置服务再启动] config key : app")
+		return err
+	}
+
+	// 服务配置
+	if s.conf.Server == nil {
+		err = pkgerrors.New("[请配置服务再启动] config key : server")
+		return err
+	}
 
 	return
 }
