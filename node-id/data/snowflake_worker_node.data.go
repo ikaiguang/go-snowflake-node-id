@@ -205,7 +205,7 @@ func (s *snowflakeWorkerNodeRepo) QueryMaxNodeIDByInstanceID(ctx context.Context
 func (s *snowflakeWorkerNodeRepo) QueryIdleNodeIDByInstanceID(ctx context.Context, req *entities.InstanceIdleNodeIDReq) (dataModel *entities.InstanceMaxNodeID, isNotFound bool, err error) {
 	dataModel = &entities.InstanceMaxNodeID{}
 	err = s.dbConn.WithContext(ctx).
-		Select("instance_id, snowflake_node_id").
+		Select("id, instance_id, snowflake_node_id, instance_extend_time").
 		Table(s.SnowflakeWorkerNodeSchema.TableName()).
 		Where("instance_id = ?", req.InstanceId).
 		Where("instance_extend_time <= ?", req.MaxInstanceExtendTime).
@@ -218,6 +218,12 @@ func (s *snowflakeWorkerNodeRepo) QueryIdleNodeIDByInstanceID(ctx context.Contex
 		}
 		return
 	}
+	return
+}
+
+// QueryMissingNodeIDByInstanceID 获取缺失的NodeID
+func (s *snowflakeWorkerNodeRepo) QueryMissingNodeIDByInstanceID(ctx context.Context, req *entities.InstanceMissingNodeIDReq) (dataModels []*entities.InstanceMaxNodeID, err error) {
+
 	return
 }
 

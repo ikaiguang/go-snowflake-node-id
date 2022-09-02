@@ -35,12 +35,19 @@ func (s *SnowflakeWorkerNode) GenNodeUUID() string {
 
 // InstanceMaxNodeID ...
 type InstanceMaxNodeID struct {
-	InstanceId      string `gorm:"column:instance_id" json:"instance_id"`             // 实例ID
-	SnowflakeNodeId int64  `gorm:"column:snowflake_node_id" json:"snowflake_node_id"` // 雪花算法节点id
+	Id                 uint64    `gorm:"column:id;primaryKey" json:"id"`                          // id
+	InstanceId         string    `gorm:"column:instance_id" json:"instance_id"`                   // 实例ID
+	SnowflakeNodeId    int64     `gorm:"column:snowflake_node_id" json:"snowflake_node_id"`       // 雪花算法节点id
+	InstanceExtendTime time.Time `gorm:"column:instance_extend_time" json:"instance_extend_time"` // 实例续期时间
 }
 
 // InstanceIdleNodeIDReq 获取闲置的NodeID
 type InstanceIdleNodeIDReq struct {
 	InstanceId            string
 	MaxInstanceExtendTime time.Time
+}
+
+// InstanceMissingNodeIDReq 获取缺失的NodeID
+type InstanceMissingNodeIDReq struct {
+	InstanceId string
 }

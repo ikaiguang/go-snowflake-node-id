@@ -39,7 +39,8 @@ CREATE TABLE snowflake_worker_node
     PRIMARY KEY (id),
     UNIQUE KEY node_uuid (node_uuid),
     KEY instance_id (instance_id),
-    KEY instance_extend_time (instance_extend_time)
+    KEY instance_extend_time (instance_extend_time),
+    KEY snowflake_node_id (snowflake_node_id)
 ) ENGINE InnoDB
   DEFAULT CHARSET utf8mb4
     COMMENT '雪花算法节点ID';

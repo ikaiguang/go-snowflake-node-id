@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package node.id.api.apiv1;
+
+option go_package = "github.com/ikaiguang/go-snowflake-node-id/api;apiv1";
+option java_multiple_files = true;
+option java_package = "node.id.api.apiv1";
+option java_outer_classname = "NodeIdApiApiV1";
+
+// ERROR ...
+enum ERROR {
+  // UNSPECIFIED 未指定
+  UNSPECIFIED = 0;
+
+  // CANNOT_FOUNT_USABLE_ID 未找到可用的节点ID
+  CANNOT_FOUNT_USABLE_ID = 1;
+}

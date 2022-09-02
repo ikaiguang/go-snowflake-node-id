@@ -20,9 +20,9 @@ func Test_worker_GetNodeId(t *testing.T) {
 	dbConn, err := NewMysqlDB(conf)
 	require.NoError(t, err)
 	workerHandler, err := NewWorker(
-		WithMaxNodeID(3),
 		WithIdleDuration(_idleDuration),
 		WithDBConn(dbConn),
+		WithMaxNodeID(5),
 	)
 	require.NoError(t, err)
 

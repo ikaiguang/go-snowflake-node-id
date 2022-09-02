@@ -17,8 +17,8 @@ import (
 )
 
 const (
-	_maxNodeId    = 1023
-	_idleDuration = 16 * time.Second
+	_maxNodeId    = 1023             // 最大节点ID
+	_idleDuration = 16 * time.Second // 空闲时间
 )
 
 // worker ...
@@ -37,9 +37,15 @@ func NewWorker(opts ...Option) (*worker, error) {
 	for i := range opts {
 		opts[i](options)
 	}
+	// db
 	if options.dbConn == nil {
 		err := stderrors.New("[nodeid.NewWorker] 缺少参数：dbConn")
 		return nil, err
+	}
+
+	// maxNodeID
+	if options.maxNodeID < 1 {
+		options.maxNodeID = 1
 	}
 	w := &worker{
 		opt:      options,
@@ -76,7 +82,16 @@ func (s *worker) GetNodeId(ctx context.Context, req *apiv1.GetNodeIdReq) (resp *
 		return resp, err
 	}
 
+	reason := apiv1.ERROR_CANNOT_FOUNT_USABLE_ID
+	message := "未找到可用的节点ID"
+	err = errorutil.NotFound(reason.String(), message)
 	return resp, err
+}
+
+// getMissingNodeID 获取缺失的ID
+func (s *worker) getMissingNodeID(ctx context.Context, req *apiv1.GetNodeIdReq) (resp *apiv1.SnowflakeWorkerNode, hasValidID bool, err error) {
+
+	return resp, hasValidID, err
 }
 
 // getIdleNodeID 获取闲置的ID
@@ -95,6 +110,9 @@ func (s *worker) getIdleNodeID(ctx context.Context, req *apiv1.GetNodeIdReq) (re
 		return resp, hasValidID, err
 	}
 	if isNotFound {
+		return resp, hasValidID, err
+	}
+	if nodeIDModel.SnowflakeNodeId > s.opt.maxNodeID {
 		return resp, hasValidID, err
 	}
 

@@ -18,6 +18,13 @@ type options struct {
 // Option is config option.
 type Option func(*options)
 
+// WithDBConn ...
+func WithDBConn(dbConn *gorm.DB) Option {
+	return func(o *options) {
+		o.dbConn = dbConn
+	}
+}
+
 // WithMaxNodeID ...
 func WithMaxNodeID(maxNodeID int64) Option {
 	return func(o *options) {
@@ -29,12 +36,5 @@ func WithMaxNodeID(maxNodeID int64) Option {
 func WithIdleDuration(idleDuration time.Duration) Option {
 	return func(o *options) {
 		o.idleDuration = idleDuration
-	}
-}
-
-// WithDBConn ...
-func WithDBConn(dbConn *gorm.DB) Option {
-	return func(o *options) {
-		o.dbConn = dbConn
 	}
 }

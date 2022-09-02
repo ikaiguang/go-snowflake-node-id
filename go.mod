@@ -3,7 +3,7 @@ module github.com/ikaiguang/go-snowflake-node-id
 go 1.18
 
 require (
-	github.com/ikaiguang/go-srv-kit v0.0.84
+	github.com/ikaiguang/go-srv-kit v0.0.85
 	github.com/stretchr/testify v1.8.0
 	google.golang.org/protobuf v1.28.1
 	gorm.io/gorm v1.23.8

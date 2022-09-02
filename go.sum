@@ -67,6 +67,8 @@ github.com/gorilla/mux v1.8.0/go.mod h1:DVbg23sWSpFRCP0SfiEN6jmj59UnW/n46BH5rLB7
 github.com/grpc-ecosystem/grpc-gateway v1.16.0/go.mod h1:BDjrQk3hbvj6Nolgz8mAMFbcEtjT1g+wF4CSlocrBnw=
 github.com/ikaiguang/go-srv-kit v0.0.84 h1:E0KwLe6BoXdyE3taVV3OyKaOCGH28TWb61kGeQxfYpY=
 github.com/ikaiguang/go-srv-kit v0.0.84/go.mod h1:Dhs3OoPWJgGxprNJQquk7I66p4aTZP51e5+9cqgKtuU=
+github.com/ikaiguang/go-srv-kit v0.0.85 h1:gHJhLD4TpSjhZ8ByT13ArHGYsVYJELNVATH/+7M7l9A=
+github.com/ikaiguang/go-srv-kit v0.0.85/go.mod h1:AwxsIIuvVLQUlTjk8FDrMHp+ILbguI/RR4BRK9OPXrk=
 github.com/imdario/mergo v0.3.12/go.mod h1:jmQim1M+e3UYxmgPu/WyfjB3N3VflVyUjjjwH0dnCYA=
 github.com/jackc/chunkreader/v2 v2.0.1 h1:i+RDz65UE+mmpjTfyz0MoVTnzeYxroil2G82ki7MGG8=
 github.com/jackc/pgconn v1.12.1 h1:rsDFzIpRk7xT4B8FufgpCCeyjdNpKyghZeSefViE5W8=
