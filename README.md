@@ -106,7 +106,7 @@ node-id核心代码所在位置：
 
 ### 服务配置
 
-1. 修改数据库配置 [./configs/config_data.yaml](runtime/config_data.yaml)
+1. 修改数据库配置 [./configs/config.yaml](configs/config.yaml)
 
 - 修改数据库配置 : `data.mysql.dsn` : 账户、密码、数据库
 
