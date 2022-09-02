@@ -116,6 +116,17 @@ node-id核心代码所在位置：
 go run ./cmd/main/... -conf=./configs
 ```
 
+**构建服务**
+
+```shell
+# 构建服务
+go build -o ./bin/snowflake-node-id ./cmd/main/snowflake-node-id.go
+go install ./cmd/main/snowflake-node-id.go
+# 运行服务
+./bin/snowflake-node-id -conf=./configs
+snowflake-node-id -conf=./configs
+```
+
 **测试服务**
 
 ```shell
