@@ -144,6 +144,7 @@ curl -k -X POST \
 # extend node id
 curl -k -X POST \
     -H "Content-Type:application/json" \
+    -d '{"id":100,"instanceId":"test-service","nodeId":10}' \
     http://127.0.0.1:8081/api/v1/node-id/extend-node-id
 ```
 
