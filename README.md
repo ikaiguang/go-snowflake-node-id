@@ -1,6 +1,6 @@
 # 雪花算法 节点ID
 
-`snowflake`雪花算法，依赖节点id(nodeID:节点ID，machineID:机器编码)
+为`snowflake`雪花算法，提供唯一节点ID(nodeID:节点ID，machineID:机器编码)
 
 当业务服务需要扩容时，节点ID必须全局**唯一**，然后才能生产**唯一ID**
 
