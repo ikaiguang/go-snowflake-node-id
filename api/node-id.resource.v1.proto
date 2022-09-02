@@ -12,7 +12,7 @@ message SnowflakeWorkerNode {
   // id 数据库ID
   uint64 id = 1;
   // instance_launch_time 实例启动时间
-  string instance_launch_time = 2;
+  //  string instance_launch_time = 2;
   // instance_extend_time 实例续期时间
   string instance_extend_time = 3;
   // instance_id 实例ID
@@ -26,7 +26,7 @@ message SnowflakeWorkerNode {
   // instance_metadata 实例元数据
   string instance_metadata = 8;
   // created_time 创建时间
-  string created_time = 9;
+  //  string created_time = 9;
 }
 
 // Result process result

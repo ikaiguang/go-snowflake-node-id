@@ -2,10 +2,10 @@ package workersrv
 
 import (
 	"context"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	errorutil "github.com/ikaiguang/go-srv-kit/error"
+	"strings"
 
-	api "github.com/ikaiguang/go-snowflake-node-id/api"
+	apiv1 "github.com/ikaiguang/go-snowflake-node-id/api"
 	servicev1 "github.com/ikaiguang/go-snowflake-node-id/api/node-id/v1/services"
 	nodeid "github.com/ikaiguang/go-snowflake-node-id/node-id"
 )
@@ -25,11 +25,25 @@ func NewWorker(workerRepo nodeid.WorkerRepo) servicev1.SrvWorkerServer {
 }
 
 // GetNodeId 获取节点ID
-func (s *worker) GetNodeId(context.Context, *api.GetNodeIdReq) (*api.SnowflakeWorkerNode, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetNodeId not implemented")
+func (s *worker) GetNodeId(ctx context.Context, in *apiv1.GetNodeIdReq) (*apiv1.SnowflakeWorkerNode, error) {
+	in.InstanceId = strings.TrimSpace(in.InstanceId)
+	if in.InstanceId == "" {
+		reason := apiv1.ERROR_WORKER_INSTANCE_ID_EMPTY.String()
+		message := "实例ID不能为空"
+		err := errorutil.NotFound(reason, message)
+		return nil, err
+	}
+	return s.workerRepo.GetNodeId(ctx, in)
 }
 
 // ExtendNodeId 续期
-func (s *worker) ExtendNodeId(context.Context, *api.ExtendNodeIdReq) (*api.Result, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ExtendNodeId not implemented")
+func (s *worker) ExtendNodeId(ctx context.Context, in *apiv1.ExtendNodeIdReq) (*apiv1.Result, error) {
+	in.InstanceId = strings.TrimSpace(in.InstanceId)
+	if in.InstanceId == "" {
+		reason := apiv1.ERROR_WORKER_INSTANCE_ID_EMPTY.String()
+		message := "实例ID不能为空"
+		err := errorutil.NotFound(reason, message)
+		return nil, err
+	}
+	return s.workerRepo.ExtendNodeId(ctx, in)
 }

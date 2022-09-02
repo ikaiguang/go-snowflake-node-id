@@ -106,6 +106,53 @@ node-id核心代码所在位置：
 
 ### 服务配置
 
-一： 修改数据库配置 [./configs/config_data.yaml](runtime/config_data.yaml)
+1. 修改数据库配置 [./configs/config_data.yaml](runtime/config_data.yaml)
 
-修改数据库配置 : `data.mysql.dsn` : 账户、密码、数据库
+- 修改数据库配置 : `data.mysql.dsn` : 账户、密码、数据库
+
+**启动服务**
+
+```shell
+go run ./cmd/main/... -conf=./configs
+```
+
+**测试服务**
+
+```shell
+
+# ping
+curl -k http://127.0.0.1:8081/api/v1/ping/hello
+
+# get node id
+curl -k -X POST \
+    -H "Content-Type:application/json" \
+    -d '{"instanceId":"test-service"}' \
+    http://127.0.0.1:8081/api/v1/node-id/get-node-id
+    
+# extend node id
+curl -k -X POST \
+    -H "Content-Type:application/json" \
+    http://127.0.0.1:8081/api/v1/node-id/extend-node-id
+```
+
+**响应**
+
+```json
+{
+  "code": 0,
+  "reason": "",
+  "message": "",
+  "requestId": "cc8r18lvqc7qhsr8nsk0",
+  "data": {
+    "@type": "type.googleapis.com/node.id.api.apiv1.SnowflakeWorkerNode",
+    "id": "8",
+    "instanceExtendTime": "2022-09-02 15:28:34",
+    "instanceId": "test-service",
+    "nodeId": "1",
+    "instanceName": "",
+    "instanceEndpointList": "[]",
+    "instanceMetadata": "{}"
+  },
+  "metadata": {}
+}
+```

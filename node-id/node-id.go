@@ -6,7 +6,6 @@ import (
 	stderrors "errors"
 	errorv1 "github.com/ikaiguang/go-srv-kit/api/error/v1"
 	errorutil "github.com/ikaiguang/go-srv-kit/error"
-	"strings"
 	"time"
 
 	apiv1 "github.com/ikaiguang/go-snowflake-node-id/api"
@@ -56,7 +55,6 @@ func NewWorker(opts ...Option) (*worker, error) {
 
 // GetNodeId 获取节点ID
 func (s *worker) GetNodeId(ctx context.Context, req *apiv1.GetNodeIdReq) (resp *apiv1.SnowflakeWorkerNode, err error) {
-	req.InstanceId = strings.TrimSpace(req.InstanceId)
 	if len(req.Endpoints) == 0 {
 		req.Endpoints = []string{}
 	}
@@ -116,7 +114,7 @@ func (s *worker) ExtendNodeId(ctx context.Context, req *apiv1.ExtendNodeIdReq) (
 	if isNotFound {
 		reason := apiv1.ERROR_CANNOT_FOUNT_EXTEND_ID.String()
 		message := "未找到续期的节点ID"
-		err = errorutil.NotFound(reason, message, err)
+		err = errorutil.NotFound(reason, message)
 		return resp, err
 	}
 
