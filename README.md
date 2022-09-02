@@ -48,3 +48,6 @@ CREATE TABLE snowflake_worker_node
     COMMENT '雪花算法节点ID';
 
 ```
+
+**时序图**
+![雪花算法ID节点颁发流程图](./statics/雪花算法ID节点颁发流程图@开广.drawio.png)
