@@ -16,8 +16,9 @@ import (
 )
 
 const (
-	DefaultMaxNodeId    = 1023             // 最大节点ID
-	DefaultIdleDuration = 16 * time.Second // 空闲ID时间：超过16s不续期，节点ID变为空闲的ID
+	DefaultMaxNodeId      = 1023             // 最大节点ID
+	DefaultIdleDuration   = 16 * time.Second // 空闲ID时间：超过16s不续期，节点ID变为空闲的ID
+	DefaultExtentDuration = 5 * time.Second  // 续期间隔时间
 )
 
 // worker ...

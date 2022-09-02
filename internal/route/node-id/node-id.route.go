@@ -3,7 +3,9 @@ package workerroute
 import (
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
+	"github.com/patrickmn/go-cache"
 	stdlog "log"
+	"time"
 
 	servicev1 "github.com/ikaiguang/go-snowflake-node-id/api/node-id/v1/services"
 	workersrv "github.com/ikaiguang/go-snowflake-node-id/internal/application/service/node-id"
@@ -39,8 +41,12 @@ func RegisterRoutes(engineHandler setup.Engine, hs *http.Server, gs *grpc.Server
 		return err
 	}
 
+	// cache
+	cacheHandler := cache.New(5*time.Minute, 10*time.Minute)
+
 	// 服务
 	srv := workersrv.NewWorker(
+		cacheHandler,
 		workerRepo,
 	)
 	servicev1.RegisterSrvWorkerHTTPServer(hs, srv)
