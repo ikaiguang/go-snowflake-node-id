@@ -9,9 +9,9 @@ import (
 type options struct {
 	dbConn *gorm.DB
 
-	// maxNodeID 节点ID；默认 _maxNodeId = 1023
+	// maxNodeID 节点ID；默认 DefaultMaxNodeId = 1023
 	maxNodeID int64
-	// idleDuration 闲置的时间
+	// idleDuration 闲置的时间；默认 DefaultIdleDuration = 16s
 	idleDuration time.Duration
 }
 

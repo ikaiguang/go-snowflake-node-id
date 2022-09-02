@@ -47,7 +47,7 @@ func Test_worker_GetNodeId(t *testing.T) {
 	dbConn, err := NewMysqlDB(conf)
 	require.NoError(t, err)
 	workerHandler, err := NewWorker(
-		WithIdleDuration(_idleDuration),
+		WithIdleDuration(DefaultIdleDuration),
 		WithDBConn(dbConn),
 		WithMaxNodeID(5),
 	)
@@ -113,7 +113,7 @@ func Test_worker_ExtendNodeId(t *testing.T) {
 	dbConn, err := NewMysqlDB(conf)
 	require.NoError(t, err)
 	workerHandler, err := NewWorker(
-		WithIdleDuration(_idleDuration),
+		WithIdleDuration(DefaultIdleDuration),
 		WithDBConn(dbConn),
 		WithMaxNodeID(5),
 	)

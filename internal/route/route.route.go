@@ -6,6 +6,7 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
 
+	workerroute "github.com/ikaiguang/go-snowflake-node-id/internal/route/node-id"
 	pingroute "github.com/ikaiguang/go-snowflake-node-id/internal/route/ping"
 	rootroute "github.com/ikaiguang/go-snowflake-node-id/internal/route/root"
 	"github.com/ikaiguang/go-snowflake-node-id/internal/setup"
@@ -36,6 +37,12 @@ func RegisterRoutes(engineHandler setup.Engine, hs *http.Server, gs *grpc.Server
 	// testdata
 	pingroute.RegisterRoutes(hs, gs, logger)
 	//testdataroute.RegisterRoutes(hs, gs, logger)
+
+	// workerroute
+	err = workerroute.RegisterRoutes(engineHandler, hs, gs)
+	if err != nil {
+		return err
+	}
 
 	return err
 }

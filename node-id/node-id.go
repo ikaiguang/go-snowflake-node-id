@@ -17,8 +17,8 @@ import (
 )
 
 const (
-	_maxNodeId    = 1023             // 最大节点ID
-	_idleDuration = 16 * time.Second // 空闲时间
+	DefaultMaxNodeId    = 1023             // 最大节点ID
+	DefaultIdleDuration = 16 * time.Second // 空闲时间
 )
 
 // worker ...
@@ -30,10 +30,7 @@ type worker struct {
 
 // NewWorker ...
 func NewWorker(opts ...Option) (*worker, error) {
-	options := &options{
-		maxNodeID:    _maxNodeId,
-		idleDuration: _idleDuration,
-	}
+	options := &options{}
 	for i := range opts {
 		opts[i](options)
 	}
@@ -43,9 +40,12 @@ func NewWorker(opts ...Option) (*worker, error) {
 		return nil, err
 	}
 
-	// maxNodeID
+	// maxNodeID & idleDuration
 	if options.maxNodeID < 1 {
-		options.maxNodeID = 1
+		options.maxNodeID = DefaultMaxNodeId
+	}
+	if options.idleDuration < 1 {
+		options.idleDuration = DefaultIdleDuration
 	}
 	w := &worker{
 		opt:      options,

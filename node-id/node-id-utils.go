@@ -12,7 +12,9 @@ import (
 
 // WorkerRepo ...
 type WorkerRepo interface {
+	// GetNodeId 获取节点ID
 	GetNodeId(ctx context.Context, req *apiv1.GetNodeIdReq) (resp *apiv1.SnowflakeWorkerNode, err error)
+	// ExtendNodeId 续期
 	ExtendNodeId(ctx context.Context, req *apiv1.ExtendNodeIdReq) (resp *apiv1.Result, err error)
 }
 
