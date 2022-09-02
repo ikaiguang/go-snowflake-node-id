@@ -4,7 +4,58 @@
 
 当业务服务需要扩容时，节点ID必须全局**唯一**，然后才能生产**唯一ID**
 
-本工具主要功能：提供全局唯一的**节点ID**
+主要功能：提供全局唯一的**节点ID**
+
+## 目录说明
+
+核心代码所在位置： 
+
+- [./node-id](./node-id)
+- [./api](./api)
+
+其他的目录为：`kratos`框架服务
+
+服务配置：[./config](./configs)
+
+- 开放接口: `HTTP` : [HTTP] server listening on: [::]:8081
+- 开放接口: `GRPC` : [gRPC] server listening on: [::]:9091
+
+## 使用示例
+
+```text
+
+// WorkerRepo ...
+type WorkerRepo interface {
+	GetNodeId(ctx context.Context, req *apiv1.GetNodeIdReq) (resp *apiv1.SnowflakeWorkerNode, err error)
+	ExtendNodeId(ctx context.Context, req *apiv1.ExtendNodeIdReq) (resp *apiv1.Result, err error)
+}
+
+// ExampleNewWorker ...
+func ExampleNewWorker() {
+	var workerHandler WorkerRepo
+
+	conf := &confv1.Data_MySQL{
+		Dsn:            "root:Mysql.123456@tcp(127.0.0.1:3306)/srv_snowflake?charset=utf8mb4&timeout=30s&parseTime=True&loc=Local",
+		LoggerEnable:   true,
+		LoggerColorful: true,
+		LoggerLevel:    "DEBUG",
+	}
+	dbConn, err := NewMysqlDB(conf)
+	if err != nil {
+		panic(err)
+	}
+	workerHandler, err = NewWorker(
+		WithDBConn(dbConn),
+		WithMaxNodeID(5),
+		WithIdleDuration(16 * time.Second),
+	)
+	if err != nil {
+		panic(err)
+	}
+	_, _ = workerHandler.GetNodeId(context.Background(), nil)
+	_, _ = workerHandler.ExtendNodeId(context.Background(), nil)
+}
+```
 
 ## 数据存储
 
@@ -50,15 +101,5 @@ CREATE TABLE snowflake_worker_node
 ```
 
 ## 算法流程图
-
-```go
-
-// WorkerRepo ...
-type WorkerRepo interface {
-	GetNodeId(ctx context.Context, req *apiv1.GetNodeIdReq) (resp *apiv1.SnowflakeWorkerNode, err error)
-	ExtendNodeId(ctx context.Context, req *apiv1.ExtendNodeIdReq) (resp *apiv1.Result, err error)
-}
-
-```
 
 ![雪花算法ID节点颁发流程图](./statics/雪花算法ID节点颁发流程图@开广.drawio.png)

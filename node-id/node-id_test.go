@@ -5,12 +5,15 @@ import (
 	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 	"github.com/stretchr/testify/require"
 	"testing"
+	"time"
 
 	apiv1 "github.com/ikaiguang/go-snowflake-node-id/api"
 )
 
 // ExampleNewWorker ...
 func ExampleNewWorker() {
+	var workerHandler WorkerRepo
+
 	conf := &confv1.Data_MySQL{
 		Dsn:            "root:Mysql.123456@tcp(127.0.0.1:3306)/srv_snowflake?charset=utf8mb4&timeout=30s&parseTime=True&loc=Local",
 		LoggerEnable:   true,
@@ -21,15 +24,16 @@ func ExampleNewWorker() {
 	if err != nil {
 		panic(err)
 	}
-	workerHandler, err := NewWorker(
-		WithIdleDuration(_idleDuration),
+	workerHandler, err = NewWorker(
 		WithDBConn(dbConn),
 		WithMaxNodeID(5),
+		WithIdleDuration(16*time.Second),
 	)
 	if err != nil {
 		panic(err)
 	}
 	_, _ = workerHandler.GetNodeId(context.Background(), nil)
+	_, _ = workerHandler.ExtendNodeId(context.Background(), nil)
 }
 
 // go test -v -count=1 ./node-id/ -run=Test_worker_GetNodeId
