@@ -197,6 +197,8 @@ github.com/hashicorp/serf v0.9.8/go.mod h1:TXZNMjZQijwlDvp+r0b63xZ45H7JmCmgg4gpT
 github.com/hpcloud/tail v1.0.0/go.mod h1:ab1qPbhIpdTxEkNHXyeSf5vhxWSCs/tWer42PpOxQnU=
 github.com/ikaiguang/go-srv-kit v0.0.85 h1:gHJhLD4TpSjhZ8ByT13ArHGYsVYJELNVATH/+7M7l9A=
 github.com/ikaiguang/go-srv-kit v0.0.85/go.mod h1:AwxsIIuvVLQUlTjk8FDrMHp+ILbguI/RR4BRK9OPXrk=
+github.com/ikaiguang/go-srv-kit v0.0.86 h1:oy7d8UFmwPHKbnErUXYSSaKnp37UBRVZTiTJFE5qlYg=
+github.com/ikaiguang/go-srv-kit v0.0.86/go.mod h1:AwxsIIuvVLQUlTjk8FDrMHp+ILbguI/RR4BRK9OPXrk=
 github.com/imdario/mergo v0.3.12 h1:b6R2BslTbIEToALKP7LxUvijTsNI9TAe80pLWN2g/HU=
 github.com/imdario/mergo v0.3.12/go.mod h1:jmQim1M+e3UYxmgPu/WyfjB3N3VflVyUjjjwH0dnCYA=
 github.com/jackc/chunkreader v1.0.0/go.mod h1:RT6O25fNZIuasFJRyZ4R/Y2BbhasbmZXF9QQ7T3kePo=
