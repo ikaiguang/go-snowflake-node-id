@@ -51,4 +51,14 @@ CREATE TABLE snowflake_worker_node
 
 ## 算法流程图
 
+```go
+
+// WorkerRepo ...
+type WorkerRepo interface {
+	GetNodeId(ctx context.Context, req *apiv1.GetNodeIdReq) (resp *apiv1.SnowflakeWorkerNode, err error)
+	ExtendNodeId(ctx context.Context, req *apiv1.ExtendNodeIdReq) (resp *apiv1.Result, err error)
+}
+
+```
+
 ![雪花算法ID节点颁发流程图](./statics/雪花算法ID节点颁发流程图@开广.drawio.png)
