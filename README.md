@@ -106,9 +106,10 @@ node-id核心代码所在位置：
 
 ### 服务配置
 
-1. 修改数据库配置 [./configs/config.yaml](configs/config.yaml)
+修改配置文件： [./configs/config.yaml](configs/config.yaml)
 
 - 修改数据库配置 : `data.mysql.dsn` : 账户、密码、数据库
+- 修改节点ID配置 : `node_id.max_node_id` 最大节点值 与 `node_id.idle_duration` 空闲ID时间
 
 **启动服务**
 
