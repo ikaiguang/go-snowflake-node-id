@@ -11,7 +11,8 @@ type options struct {
 
 	// maxNodeID 节点ID；默认 DefaultMaxNodeId = 1023
 	maxNodeID int64
-	// idleDuration 闲置的时间；默认 DefaultIdleDuration = 16s
+	// idleDuration 空闲ID时间：超过此时间不续期，节点ID变为空闲的ID；
+	// 默认 DefaultIdleDuration = 16s
 	idleDuration time.Duration
 }
 

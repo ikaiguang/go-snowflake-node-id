@@ -16,6 +16,8 @@ import (
 	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 	envv1 "github.com/ikaiguang/go-srv-kit/api/env/v1"
 	tokenutil "github.com/ikaiguang/go-srv-kit/kratos/token"
+
+	configv1 "github.com/ikaiguang/go-snowflake-node-id/api/config/v1"
 )
 
 var (
@@ -103,6 +105,9 @@ type Config interface {
 	ConsulConfig() *confv1.Data_Consul
 	// JaegerTraceConfig jaeger trace 配置
 	JaegerTraceConfig() *confv1.Data_JaegerTrace
+
+	// NodeIDConfig 节点ID配置
+	NodeIDConfig() *configv1.NodeID
 
 	// Close 关闭
 	Close() error

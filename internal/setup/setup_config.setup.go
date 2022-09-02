@@ -190,6 +190,22 @@ func (s *configuration) AppConfig() *confv1.App {
 	return s.conf.App
 }
 
+// HTTPConfig http配置
+func (s *configuration) HTTPConfig() *confv1.Server_HTTP {
+	if s.conf.Server == nil {
+		return nil
+	}
+	return s.conf.Server.Http
+}
+
+// GRPCConfig grpc配置
+func (s *configuration) GRPCConfig() *confv1.Server_GRPC {
+	if s.conf.Server == nil {
+		return nil
+	}
+	return s.conf.Server.Grpc
+}
+
 // ServerConfig 服务配置
 func (s *configuration) ServerConfig() *confv1.Server {
 	return s.conf.Server
@@ -272,18 +288,7 @@ func (s *configuration) JaegerTraceConfig() *confv1.Data_JaegerTrace {
 	return s.conf.Data.JaegerTrace
 }
 
-// HTTPConfig http配置
-func (s *configuration) HTTPConfig() *confv1.Server_HTTP {
-	if s.conf.Server == nil {
-		return nil
-	}
-	return s.conf.Server.Http
-}
-
-// GRPCConfig grpc配置
-func (s *configuration) GRPCConfig() *confv1.Server_GRPC {
-	if s.conf.Server == nil {
-		return nil
-	}
-	return s.conf.Server.Grpc
+// NodeIDConfig 节点ID配置
+func (s *configuration) NodeIDConfig() *configv1.NodeID {
+	return s.conf.NodeId
 }

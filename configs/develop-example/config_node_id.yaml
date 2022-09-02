@@ -1,0 +1,6 @@
+# node-id 雪花算法id
+node_id:
+  # max_node_id 最大节点ID
+  max_node_id: 1023
+  # idle_duration 空闲ID时间：超过16s不续期，节点ID变为空闲的ID
+  idle_duration: 16s

@@ -8,6 +8,7 @@ option java_multiple_files = true;
 option java_package = "nodeid.api.configv1";
 option java_outer_classname = "NodeIdApiConfigV1";
 
+import "google/protobuf/duration.proto";
 import "github.com/ikaiguang/go-srv-kit/api/conf/v1/conf.v1.proto";
 
 // Bootstrap 配置引导
@@ -20,4 +21,14 @@ message Bootstrap {
   kit.api.confv1.Data data = 3;
   // server 服务
   kit.api.confv1.Server server = 4;
+  // node_id 节点id配置
+  NodeID node_id = 5;
+}
+
+// Bootstrap 配置引导
+message NodeID {
+  // max_node_id 最大节点ID
+  int64 max_node_id = 1;
+  // idle_duration 空闲ID时间：超过此期限不续期，节点ID变为空闲的ID
+  google.protobuf.Duration idle_duration = 2;
 }

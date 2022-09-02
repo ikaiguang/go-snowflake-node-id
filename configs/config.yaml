@@ -1,0 +1,80 @@
+# app 程序
+app:
+  name: snowflake-node-id
+  version: v1.0.0
+  # env 开发环境；值：DEVELOP、TESTING、PREVIEW、PRODUCTION
+  env: develop
+  # env_branch 环境分支；main、feature/xxx、fix/xxx
+  env_branch: main
+  # endpoints 自定义的endpoint
+  endpoints:
+    - https://uufff.com
+  metadata:
+    id: "${app.name}_${app.env}_${app.env_branch}_${app.version}"
+
+# server 服务
+server:
+  http:
+    enable: true
+    network:
+    addr: 0.0.0.0:8081
+    timeout: 60s
+  grpc:
+    enable: true
+    network:
+    addr: 0.0.0.0:9091
+    timeout: 60s
+
+# node-id 雪花算法id
+node_id:
+  # max_node_id 最大节点ID
+  max_node_id: 1023
+  # idle_duration 空闲ID时间：超过16s不续期，节点ID变为空闲的ID
+  idle_duration: 16s
+
+# data 数据
+data:
+  # mysql MySQL
+  mysql:
+    enable: true
+    dsn: root:Mysql.123456@tcp(127.0.0.1:3306)/srv_snowflake?charset=utf8mb4&timeout=30s&parseTime=True&loc=Local
+    # slow_threshold 慢查询时间
+    slow_threshold: 0.1s
+    logger_enable: true
+    logger_colorful: true
+    # logger_level 日志级别；值：DEBUG、INFO、WARN、ERROR
+    logger_level: DEBUG
+    # conn_max_active 连接的最大数量
+    conn_max_active: 100
+    # conn_max_lifetime 连接可复用的最大时间
+    conn_max_lifetime: 300s
+    # conn_max_idle 连接池中空闲连接的最大数量
+    conn_max_idle: 10
+    # conn_max_idle_time 设置连接空闲的最长时间
+    conn_max_idle_time: 600s
+
+# log 日志
+log:
+  console:
+    enable: true
+    # level 日志级别；值：DEBUG、INFO、WARN、ERROR、FATAL
+    level: debug
+  file:
+    enable: true
+    # level 日志级别；值：DEBUG、INFO、WARN、ERROR、FATAL
+    level: DEBUG
+    # dir: ./runtime/logs
+    dir: ./runtime/logs
+    filename: snowflake-node-id
+    # rotate_time 轮询规则：n久(默认：86400s # 86400s = 1天)
+    # 轮询规则：默认为：RotateTime
+    rotate_time: 86400s
+    # rotate_size 轮询规则：按文件大小(默认：52428800 # 50<<20 = 50M)
+    # 轮询规则：默认为：RotateTime
+    rotate_size: 52428800
+    # storage_age 存储规则：n久(默认：30天)
+    # 存储规则：默认为：StorageAge
+    storage_age: 2592000s
+    # storage_counter 存储规则：n个(默认：10086个)
+    # 存储规则：默认为：StorageAge
+    storage_counter: 10086
