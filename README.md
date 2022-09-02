@@ -49,5 +49,6 @@ CREATE TABLE snowflake_worker_node
 
 ```
 
-**时序图**
+## 算法流程图
+
 ![雪花算法ID节点颁发流程图](./statics/雪花算法ID节点颁发流程图@开广.drawio.png)
