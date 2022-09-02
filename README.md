@@ -137,6 +137,8 @@ curl -k -X POST \
 
 **响应**
 
+> 如果是JSON响应，则`uint64、int64` 自动转换为 `string`
+
 ```json
 {
   "code": 0,
