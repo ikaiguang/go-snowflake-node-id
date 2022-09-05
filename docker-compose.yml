@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  snowflake-node-id:
+    # image: ikaiguagn/snowflake-node-id:latest
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: snowflake-node-id
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Shanghai
+    # network_mode: bridge
+    volumes:
+      - ./configs:/www/app/configs
+      - ./runtime:/www/app/runtime
+    expose:
+      - 8081
+      - 9091
+    ports:
+      - "8081:8081"
+      - "9091:9091"

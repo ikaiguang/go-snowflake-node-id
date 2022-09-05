@@ -171,3 +171,20 @@ curl -k -X POST \
   "metadata": {}
 }
 ```
+
+## Dockerfile
+
+```shell
+
+# build
+docker build  -f ./Dockerfile -t ikaiguang/snowflake-node-id:latest .
+
+# run
+docker-compose up
+
+# push
+docker tag go-snowflake-node-id_snowflake-node-id:latest docker.io/ikaiguang/snowflake-node-id:latest
+docker push ikaiguang/snowflake-node-id:latest
+
+
+```
