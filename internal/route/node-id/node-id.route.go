@@ -45,7 +45,7 @@ func RegisterRoutes(engineHandler setup.Engine, hs *http.Server, gs *grpc.Server
 	var locker nodeid.Locker
 	cacheHandler := cache.New(5*time.Minute, 10*time.Minute)
 	locker = nodeid.NewLockerFromCache(cacheHandler)
-	if cfg := engineHandler.RedisConfig(); cfg != nil && cfg.Addr != "" {
+	if cfg := engineHandler.NodeIDConfig(); cfg != nil && cfg.EnableRedisLocker {
 		redisCC, err := engineHandler.GetRedisClient()
 		if err != nil {
 			return err

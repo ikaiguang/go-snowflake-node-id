@@ -27,6 +27,8 @@ message Bootstrap {
 
 // Bootstrap 配置引导
 message NodeID {
+  // enable_redis_locker 启用redis锁；默认sync.Mutex互斥锁
+  bool enable_redis_locker = 3;
   // max_node_id 最大节点ID
   int64 max_node_id = 1;
   // idle_duration 空闲ID时间：超过此期限不续期，节点ID变为空闲的ID

@@ -27,6 +27,8 @@ server:
 
 # node-id 雪花算法id
 node_id:
+  # enable_redis_locker 启用redis锁；默认sync.Mutex互斥锁
+  enable_redis_locker: false
   # max_node_id 最大节点ID
   max_node_id: 1023
   # idle_duration 空闲ID时间：超过16s不续期，节点ID变为空闲的ID
