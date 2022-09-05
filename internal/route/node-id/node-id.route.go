@@ -42,11 +42,20 @@ func RegisterRoutes(engineHandler setup.Engine, hs *http.Server, gs *grpc.Server
 	}
 
 	// cache
+	var locker nodeid.Locker
 	cacheHandler := cache.New(5*time.Minute, 10*time.Minute)
+	locker = nodeid.NewLockerFromCache(cacheHandler)
+	if cfg := engineHandler.RedisConfig(); cfg != nil && cfg.Addr != "" {
+		redisCC, err := engineHandler.GetRedisClient()
+		if err != nil {
+			return err
+		}
+		locker = nodeid.NewLockerFromRedis(redisCC)
+	}
 
 	// 服务
 	srv := workersrv.NewWorker(
-		cacheHandler,
+		locker,
 		workerRepo,
 	)
 	servicev1.RegisterSrvWorkerHTTPServer(hs, srv)

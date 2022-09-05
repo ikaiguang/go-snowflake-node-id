@@ -2,11 +2,9 @@ package workersrv
 
 import (
 	"context"
+	errorv1 "github.com/ikaiguang/go-srv-kit/api/error/v1"
 	errorutil "github.com/ikaiguang/go-srv-kit/error"
-	"github.com/patrickmn/go-cache"
 	"strings"
-	"sync"
-	"time"
 
 	apiv1 "github.com/ikaiguang/go-snowflake-node-id/api"
 	servicev1 "github.com/ikaiguang/go-snowflake-node-id/api/node-id/v1/services"
@@ -17,34 +15,19 @@ import (
 type worker struct {
 	servicev1.UnimplementedSrvWorkerServer
 
-	cacheHandler *cache.Cache
-	workerRepo   nodeid.WorkerRepo
+	locker     nodeid.Locker
+	workerRepo nodeid.WorkerRepo
 }
 
 // NewWorker ...
 func NewWorker(
-	cacheHandler *cache.Cache,
+	locker nodeid.Locker,
 	workerRepo nodeid.WorkerRepo,
 ) servicev1.SrvWorkerServer {
 	return &worker{
-		cacheHandler: cacheHandler,
-		workerRepo:   workerRepo,
+		locker:     locker,
+		workerRepo: workerRepo,
 	}
-}
-
-// getOrSetInstanceLocker 获取或设置 实例锁
-// cache 已有读写锁，无需在添加额外的锁
-func (s *worker) getOrSetInstanceLocker(ctx context.Context, instanceID string) *sync.Mutex {
-	// 添加锁
-	locker, ok := s.cacheHandler.Get(instanceID)
-	if ok {
-		return locker.(*sync.Mutex)
-	}
-
-	// 设置锁
-	mu := &sync.Mutex{}
-	s.cacheHandler.Set(instanceID, mu, time.Minute*5)
-	return mu
 }
 
 // GetNodeId 获取节点ID
@@ -57,9 +40,15 @@ func (s *worker) GetNodeId(ctx context.Context, in *apiv1.GetNodeIdReq) (*apiv1.
 		return nil, err
 	}
 
-	locker := s.getOrSetInstanceLocker(ctx, in.InstanceId)
-	locker.Lock()
-	defer locker.Unlock()
+	// 锁
+	unlocker, err := s.locker.Lock(ctx, in.InstanceId)
+	if err != nil {
+		reason := errorv1.ERROR_INTERNAL_SERVER.String()
+		message := "服务器错误"
+		err = errorutil.InternalServer(reason, message)
+		return nil, err
+	}
+	defer func() { _, _ = unlocker.Unlock(ctx) }()
 
 	return s.workerRepo.GetNodeId(ctx, in)
 }
