@@ -2,10 +2,10 @@ version: '3'
 
 services:
   snowflake-node-id:
-    # image: ikaiguagn/snowflake-node-id:latest
-    build:
-      context: ./
-      dockerfile: Dockerfile
+    image: ikaiguang/snowflake-node-id:latest
+    #build:
+    #  context: ./
+    #  dockerfile: Dockerfile
     container_name: snowflake-node-id
     restart: unless-stopped
     environment:
