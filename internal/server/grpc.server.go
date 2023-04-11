@@ -1,17 +1,13 @@
 package servers
 
 import (
-	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/middleware/metadata"
-	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
-	stdlog "log"
-
-	logmiddle "github.com/ikaiguang/go-srv-kit/kratos/middleware/log"
-
-	middlewares "github.com/ikaiguang/go-snowflake-node-id/internal/server/middleware"
+	middlewareutil "github.com/ikaiguang/go-snowflake-node-id/business-util/middleware"
 	"github.com/ikaiguang/go-snowflake-node-id/internal/setup"
+	apppkg "github.com/ikaiguang/go-snowflake-node-id/pkg/app"
+	stdlog "log"
 )
 
 var _ metadata.Option
@@ -40,15 +36,12 @@ func NewGRPCServer(engineHandler setup.Engine) (srv *grpc.Server, err error) {
 	}
 
 	// ===== 中间件 =====
-	var middlewareSlice = []middleware.Middleware{
-		recovery.Recovery(),
-		//metadata.Server(),
-	}
+	var middlewareSlice = middlewareutil.DefaultMiddlewares()
 	// tracer
-	settingConfig := engineHandler.ServerSettingConfig()
+	settingConfig := engineHandler.BaseSettingConfig()
 	if settingConfig != nil && settingConfig.EnableServiceTracer {
 		stdlog.Println("|*** 加载：服务追踪：GRPC")
-		if err = middlewares.SetTracerProvider(engineHandler); err != nil {
+		if err = middlewareutil.SetTracerProvider(engineHandler); err != nil {
 			return srv, err
 		}
 		middlewareSlice = append(middlewareSlice, tracing.Server())
@@ -60,17 +53,17 @@ func NewGRPCServer(engineHandler setup.Engine) (srv *grpc.Server, err error) {
 	}
 	// 日志输出
 	//errorutil.DefaultStackTracerDepth += 2
-	middlewareSlice = append(middlewareSlice, logmiddle.ServerLog(
+	middlewareSlice = append(middlewareSlice, apppkg.ServerLog(
 		middleLogger,
-		//logmiddle.WithDefaultSkip(),
+		//middlewareutil.WithDefaultSkip(),
 	))
 	// jwt
 	//stdlog.Println("|*** 加载：JWT中间件：GRPC")
-	//jwtMiddleware, err := middlewares.NewJWTMiddleware(engineHandler)
-	//if err != nil {
-	//	return srv, err
-	//}
-	//middlewareSlice = append(middlewareSlice, jwtMiddleware)
+	jwtMiddleware, err := middlewareutil.NewJWTMiddleware(engineHandler, getAuthWhiteList())
+	if err != nil {
+		return srv, err
+	}
+	middlewareSlice = append(middlewareSlice, jwtMiddleware)
 
 	// 中间件选项
 	opts = append(opts, grpc.Middleware(middlewareSlice...))

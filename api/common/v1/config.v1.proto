@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package snowflake.service.api.commonv1;
+
+option go_package = "github.com/ikaiguang/go-snowflake-node-id/api/common/v1;commonv1";
+option java_multiple_files = true;
+option java_package = "snowflake.service.api.commonv1";
+option java_outer_classname = "SnowflakeServiceApiCommonV1";
+
+import "google/protobuf/duration.proto";
+import "github.com/ikaiguang/go-srv-kit/api/conf/v1/conf.v1.proto";
+
+// Bootstrap 配置引导
+message Bootstrap {
+  // app application
+  App app = 1;
+  // log 日志
+  kit.api.confv1.Log log = 2;
+  // data 数据
+  kit.api.confv1.Data data = 3;
+  // server 服务
+  kit.api.confv1.Server server = 4;
+  // base 基础配置
+  kit.api.confv1.Base base = 5;
+  // Business 业务配置
+  kit.api.confv1.Business business = 6;
+  // node_id 节点id配置
+  NodeID node_id = 7;
+}
+
+// App application
+message App {
+  // belong_to 属于哪个项目
+  string belong_to = 1;
+  // name app名字
+  string name = 2;
+  // version app版本
+  string version = 3;
+  // env app 环境
+  string env = 4;
+  // env_branch 环境分支
+  string env_branch = 5;
+  // endpoints app站点
+  repeated string endpoints = 6;
+  // metadata 元数据
+  map<string, string> metadata = 7;
+}
+
+// Bootstrap 配置引导
+message NodeID {
+  // enable_redis_locker 启用redis锁；默认sync.Mutex互斥锁
+  bool enable_redis_locker = 3;
+  // max_node_id 最大节点ID
+  int64 max_node_id = 1;
+  // idle_duration 空闲ID时间：超过此期限不续期，节点ID变为空闲的ID
+  google.protobuf.Duration idle_duration = 2;
+}

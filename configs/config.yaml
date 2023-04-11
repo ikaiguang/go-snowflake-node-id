@@ -1,5 +1,7 @@
 # app 程序
 app:
+  # belong_to 属于哪个项目
+  belong_to: go-srv-snowflake
   name: snowflake-node-id
   version: v1.0.0
   # env 开发环境；值：DEVELOP、TESTING、PREVIEW、PRODUCTION
@@ -85,7 +87,7 @@ log:
     level: DEBUG
     # dir: ./runtime/logs
     dir: ./runtime/logs
-    filename: snowflake-node-id
+    filename: "${app.belong_to}_${app.name}"
     # rotate_time 轮询规则：n久(默认：86400s # 86400s = 1天)
     # 轮询规则：默认为：RotateTime
     rotate_time: 86400s

@@ -1,19 +1,13 @@
 package servers
 
 import (
-	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/middleware/metadata"
-	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	stdlog "log"
-
-	apputil "github.com/ikaiguang/go-srv-kit/kratos/app"
-	headermiddle "github.com/ikaiguang/go-srv-kit/kratos/middleware/header"
-	logmiddle "github.com/ikaiguang/go-srv-kit/kratos/middleware/log"
-
-	middlewares "github.com/ikaiguang/go-snowflake-node-id/internal/server/middleware"
+	middlewareutil "github.com/ikaiguang/go-snowflake-node-id/business-util/middleware"
 	"github.com/ikaiguang/go-snowflake-node-id/internal/setup"
+	apppkg "github.com/ikaiguang/go-snowflake-node-id/pkg/app"
+	stdlog "log"
 )
 
 var _ metadata.Option
@@ -32,7 +26,7 @@ func NewHTTPServer(engineHandler setup.Engine) (srv *http.Server, err error) {
 	// options
 	var opts []http.ServerOption
 	//var opts = []http.ServerOption{
-	//	http.Filter(middlewares.NewCORS()),
+	//	http.Filter(middlewareutil.NewCORS()),
 	//}
 	if httpConfig.Network != "" {
 		opts = append(opts, http.Network(httpConfig.Network))
@@ -45,25 +39,22 @@ func NewHTTPServer(engineHandler setup.Engine) (srv *http.Server, err error) {
 	}
 
 	// 响应
-	opts = append(opts, http.ResponseEncoder(apputil.ResponseEncoder))
-	opts = append(opts, http.ErrorEncoder(apputil.ErrorEncoder))
+	opts = append(opts, http.ResponseEncoder(apppkg.ResponseEncoder))
+	opts = append(opts, http.ErrorEncoder(apppkg.ErrorEncoder))
 
 	// ===== 中间件 =====
-	var middlewareSlice = []middleware.Middleware{
-		recovery.Recovery(),
-		//metadata.Server(),
-	}
+	var middlewareSlice = middlewareutil.DefaultMiddlewares()
 	// tracer
-	settingConfig := engineHandler.ServerSettingConfig()
+	settingConfig := engineHandler.BaseSettingConfig()
 	if settingConfig != nil && settingConfig.EnableServiceTracer {
 		stdlog.Println("|*** 加载：服务追踪：HTTP")
-		if err = middlewares.SetTracerProvider(engineHandler); err != nil {
+		if err = middlewareutil.SetTracerProvider(engineHandler); err != nil {
 			return srv, err
 		}
 		middlewareSlice = append(middlewareSlice, tracing.Server())
 	}
 	// 请求头
-	middlewareSlice = append(middlewareSlice, headermiddle.RequestHeader())
+	middlewareSlice = append(middlewareSlice, middlewareutil.RequestHeader())
 	// 中间件日志
 	middleLogger, _, err := engineHandler.LoggerMiddleware()
 	if err != nil {
@@ -71,17 +62,17 @@ func NewHTTPServer(engineHandler setup.Engine) (srv *http.Server, err error) {
 	}
 	// 日志输出
 	//errorutil.DefaultStackTracerDepth += 2
-	middlewareSlice = append(middlewareSlice, logmiddle.ServerLog(
+	middlewareSlice = append(middlewareSlice, apppkg.ServerLog(
 		middleLogger,
-		//logmiddle.WithDefaultSkip(),
+		//middlewareutil.WithDefaultSkip(),
 	))
 	// jwt
 	//stdlog.Println("|*** 加载：JWT中间件：HTTP")
-	//jwtMiddleware, err := middlewares.NewJWTMiddleware(engineHandler)
-	//if err != nil {
-	//	return srv, err
-	//}
-	//middlewareSlice = append(middlewareSlice, jwtMiddleware)
+	jwtMiddleware, err := middlewareutil.NewJWTMiddleware(engineHandler, getAuthWhiteList())
+	if err != nil {
+		return srv, err
+	}
+	middlewareSlice = append(middlewareSlice, jwtMiddleware)
 
 	// 中间件选项
 	opts = append(opts, http.Middleware(middlewareSlice...))

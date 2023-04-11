@@ -1,5 +1,7 @@
 # app 程序
 app:
+  # belong_to 属于哪个项目
+  belong_to: go-srv-snowflake
   name: snowflake-node-id
   version: v1.0.0
   # env 开发环境；值：DEVELOP、TESTING、PREVIEW、PRODUCTION

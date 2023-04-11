@@ -60,7 +60,7 @@ func main() {
 // loadingAppSettingEnv 加载计划任务
 func loadingAppSettingEnv(engineHandler setup.Engine) error {
 	// 计划任务
-	settingConfig := engineHandler.ServerSettingConfig()
+	settingConfig := engineHandler.BaseSettingConfig()
 	stdlog.Println()
 	stdlog.Println("|==================== 加载计划任务 开始 ====================|")
 	defer stdlog.Println("|==================== 加载计划任务 结束 ====================|")
