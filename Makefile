@@ -11,7 +11,6 @@ info:
 	@echo "==> GIT_BRANCH: $(GIT_BRANCH)"
 	@echo "==> GIT_VERSION: $(GIT_VERSION)"
 
-# make run service=xxx
 .PHONY: run
 run:
 	go run ./cmd/main/... -conf=./configs

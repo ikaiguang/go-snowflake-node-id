@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-// go test -v ./example/internal/setup/ -count=1 -test.run=TestGetEngine -conf=./../../configs
+// go test -v ./internal/setup/ -count=1 -test.run=TestGetEngine -conf=./../../configs
 func TestGetEngine(t *testing.T) {
 	engineHandler, err := GetEngine()
 	require.Nil(t, err)

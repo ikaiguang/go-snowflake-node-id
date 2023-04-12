@@ -4,6 +4,7 @@ import (
 	"flag"
 	"github.com/go-kratos/kratos/v2/config"
 	commonv1 "github.com/ikaiguang/go-snowflake-node-id/api/common/v1"
+	configv1 "github.com/ikaiguang/go-snowflake-node-id/internal/conf"
 	apppkg "github.com/ikaiguang/go-snowflake-node-id/pkg/app"
 	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 	pkgerrors "github.com/pkg/errors"
@@ -28,7 +29,7 @@ type configuration struct {
 	// handler 配置处理手柄
 	handler config.Config
 	// conf 配置引导文件
-	conf *commonv1.Bootstrap
+	conf *configv1.Bootstrap
 
 	// env app环境
 	env commonv1.EnvEnum_Env
@@ -62,7 +63,7 @@ func (s *configuration) init(opts ...config.Option) (err error) {
 	}
 
 	// 读取配置文件
-	s.conf = &commonv1.Bootstrap{}
+	s.conf = &configv1.Bootstrap{}
 	if err = s.handler.Scan(s.conf); err != nil {
 		err = pkgerrors.WithStack(err)
 		return
@@ -245,6 +246,11 @@ func (s *configuration) JaegerTracerConfig() *confv1.Base_JaegerTracer {
 		return nil
 	}
 	return s.conf.Base.JaegerTracer
+}
+
+// SnowflakeNodeIDConfig snowflake node id
+func (s *configuration) SnowflakeNodeIDConfig() *configv1.NodeID {
+	return s.conf.NodeId
 }
 
 // SnowflakeWorkerConfig snowflake worker 配置

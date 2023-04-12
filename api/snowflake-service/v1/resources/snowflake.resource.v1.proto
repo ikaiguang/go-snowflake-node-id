@@ -1,14 +1,14 @@
 syntax = "proto3";
 
-package snowflake.service.api.nodev1;
+package snowflake.service.api.snowflakev1;
 
-option go_package = "github.com/ikaiguang/go-snowflake-node-id/api/node-service/v1/resources;nodev1";
+option go_package = "github.com/ikaiguang/go-snowflake-node-id/api/snowflake-service/v1/resources;snowflakev1";
 option java_multiple_files = true;
-option java_package = "snowflake.service.api.nodev1";
-option java_outer_classname = "SnowflakeServiceApiNodeV1";
+option java_package = "snowflake.service.api.snowflakev1";
+option java_outer_classname = "SnowflakeServiceApiSnowfalkeV1";
 
-// SnowflakeWorkerNode ENGINE InnoDB CHARSET utf8mb4 COMMENT '雪花算法节点ID'
-message SnowflakeWorkerNode {
+// SnowflakeWorker ENGINE InnoDB CHARSET utf8mb4 COMMENT '雪花算法节点ID'
+message SnowflakeWorker {
   // id 数据库ID
   uint64 id = 1;
   // instance_launch_time 实例启动时间

@@ -8,12 +8,14 @@ option java_multiple_files = true;
 option java_package = "snowflake.service.configv1";
 option java_outer_classname = "SnowflakeServiceConfigV1";
 
+import "google/protobuf/duration.proto";
+import "github.com/ikaiguang/go-snowflake-node-id/api/common/v1/config.v1.proto";
 import "github.com/ikaiguang/go-srv-kit/api/conf/v1/conf.v1.proto";
 
 // Bootstrap 配置引导
 message Bootstrap {
   // app application
-  kit.api.confv1.App app = 1;
+  snowflake.service.api.commonv1.App app = 1;
   // log 日志
   kit.api.confv1.Log log = 2;
   // data 数据
@@ -24,4 +26,16 @@ message Bootstrap {
   kit.api.confv1.Base base = 5;
   // Business 业务配置
   kit.api.confv1.Business business = 6;
+  // node_id 节点id配置
+  NodeID node_id = 7;
+}
+
+// Bootstrap 配置引导
+message NodeID {
+  // enable_redis_locker 启用redis锁；默认sync.Mutex互斥锁
+  bool enable_redis_locker = 3;
+  // max_node_id 最大节点ID
+  int64 max_node_id = 1;
+  // idle_duration 空闲ID时间：超过此期限不续期，节点ID变为空闲的ID
+  google.protobuf.Duration idle_duration = 2;
 }

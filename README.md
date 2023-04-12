@@ -114,6 +114,8 @@ node-id核心代码所在位置：
 **启动服务**
 
 ```shell
+make run
+# 或
 go run ./cmd/main/... -conf=./configs
 ```
 
@@ -135,17 +137,17 @@ snowflake-node-id -conf=./configs
 # ping
 curl -k http://127.0.0.1:8081/api/v1/ping/hello
 
-# get node id
+# 获取节点
 curl -k -X POST \
     -H "Content-Type:application/json" \
     -d '{"instanceId":"test-service"}' \
-    http://127.0.0.1:8081/api/v1/node-id/get-node-id
+    http://127.0.0.1:8081/api/v1/node-id/get
     
-# extend node id
+# 节点续期
 curl -k -X POST \
     -H "Content-Type:application/json" \
-    -d '{"id":100,"instanceId":"test-service","nodeId":10}' \
-    http://127.0.0.1:8081/api/v1/node-id/extend-node-id
+    -d '{"id":1,"instanceId":"test-service","nodeId":1}' \
+    http://127.0.0.1:8081/api/v1/node-id/extend
 ```
 
 **响应**

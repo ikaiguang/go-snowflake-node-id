@@ -7,6 +7,7 @@ import (
 	"github.com/hashicorp/consul/api"
 	commonv1 "github.com/ikaiguang/go-snowflake-node-id/api/common/v1"
 	tokenutil "github.com/ikaiguang/go-snowflake-node-id/business-util/token"
+	configv1 "github.com/ikaiguang/go-snowflake-node-id/internal/conf"
 	registrypkg "github.com/ikaiguang/go-snowflake-node-id/pkg/registry"
 	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 	pkgerrors "github.com/pkg/errors"
@@ -116,6 +117,8 @@ type Config interface {
 	ConsulConfig() *confv1.Base_Consul
 	// JaegerTracerConfig jaeger tracer 配置
 	JaegerTracerConfig() *confv1.Base_JaegerTracer
+	// SnowflakeNodeIDConfig snowflake node
+	SnowflakeNodeIDConfig() *configv1.NodeID
 	// SnowflakeWorkerConfig snowflake worker 配置
 	SnowflakeWorkerConfig() *confv1.Base_SnowflakeWorker
 
