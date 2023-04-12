@@ -2,12 +2,11 @@ package snowflakeutil
 
 import (
 	"context"
+	snowflakev1 "github.com/ikaiguang/go-snowflake-node-id/api/snowflake-service/v1/resources"
 	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
-
-	apiv1 "github.com/ikaiguang/go-snowflake-node-id/api"
 )
 
 // ExampleNewWorker ...
@@ -36,7 +35,7 @@ func ExampleNewWorker() {
 	_, _ = workerHandler.ExtendNodeId(context.Background(), nil)
 }
 
-// go test -v -count=1 ./node-id/ -run=Test_worker_GetNodeId
+// go test -v -count=1 ./business-util/snowflake/ -run=Test_worker_GetNodeId
 func Test_worker_GetNodeId(t *testing.T) {
 	conf := &confv1.Data_MySQL{
 		Dsn:            "root:Mysql.123456@tcp(127.0.0.1:3306)/srv_snowflake?charset=utf8mb4&timeout=30s&parseTime=True&loc=Local",
@@ -55,24 +54,24 @@ func Test_worker_GetNodeId(t *testing.T) {
 
 	type args struct {
 		ctx context.Context
-		req *apiv1.GetNodeIdReq
+		req *snowflakev1.GetNodeIdReq
 	}
 	tests := []struct {
 		name     string
 		args     args
-		wantResp *apiv1.SnowflakeWorkerNode
+		wantResp *snowflakev1.SnowflakeWorker
 		wantErr  bool
 	}{
 		{
 			name: "###获取nodeID",
 			args: args{
 				ctx: context.Background(),
-				req: &apiv1.GetNodeIdReq{
+				req: &snowflakev1.GetNodeIdReq{
 					InstanceId:   "test-instance",
 					InstanceName: "test-instance",
 					Endpoints: []string{
-						"http://127.0.0.1:8000?isSecure=false",
-						"grpc://127.0.0.1:9000?isSecure=false",
+						"http://127.0.0.1:8081?isSecure=false",
+						"grpc://127.0.0.1:9091?isSecure=false",
 					},
 					Metadata: map[string]string{
 						"test": "instance",
@@ -91,7 +90,9 @@ func Test_worker_GetNodeId(t *testing.T) {
 				return
 			}
 			if gotResp != nil {
-				t.Log("==> node id :", gotResp.NodeId)
+				t.Log("==> gotResp.Id :", gotResp.Id)
+				t.Log("==> gotResp.InstanceId :", gotResp.InstanceId)
+				t.Log("==> gotResp.NodeId :", gotResp.NodeId)
 			} else {
 				t.Log("==> gotResp = nil")
 			}
@@ -102,7 +103,7 @@ func Test_worker_GetNodeId(t *testing.T) {
 	}
 }
 
-// go test -v -count=1 ./node-id/ -run=Test_worker_ExtendNodeId
+// go test -v -count=1 ./business-util/snowflake/ -run=Test_worker_ExtendNodeId
 func Test_worker_ExtendNodeId(t *testing.T) {
 	conf := &confv1.Data_MySQL{
 		Dsn:            "root:Mysql.123456@tcp(127.0.0.1:3306)/srv_snowflake?charset=utf8mb4&timeout=30s&parseTime=True&loc=Local",
@@ -121,22 +122,22 @@ func Test_worker_ExtendNodeId(t *testing.T) {
 
 	type args struct {
 		ctx context.Context
-		req *apiv1.ExtendNodeIdReq
+		req *snowflakev1.ExtendNodeIdReq
 	}
 	tests := []struct {
 		name     string
 		args     args
-		wantResp *apiv1.SnowflakeWorkerNode
+		wantResp *snowflakev1.SnowflakeWorker
 		wantErr  bool
 	}{
 		{
 			name: "###续期nodeID",
 			args: args{
 				ctx: context.Background(),
-				req: &apiv1.ExtendNodeIdReq{
-					Id:         2,
+				req: &snowflakev1.ExtendNodeIdReq{
+					Id:         11,
 					InstanceId: "test-instance",
-					NodeId:     2,
+					NodeId:     3,
 				},
 			},
 			wantResp: nil,

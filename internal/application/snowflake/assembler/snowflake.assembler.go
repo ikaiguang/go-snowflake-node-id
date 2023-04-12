@@ -8,19 +8,27 @@ import (
 	timeutil "github.com/ikaiguang/go-srv-kit/kit/time"
 )
 
+// Assembler ...
+type Assembler struct{}
+
+// NewAssembler ...
+func NewAssembler() *Assembler {
+	return &Assembler{}
+}
+
 var _ = timeutil.YmdHms
 
-// AssembleListSnowflakeWorker assemble listSnowflakeWorker
-func AssembleListSnowflakeWorker(dataModels []*entities.SnowflakeWorker) []*snowflakev1.SnowflakeWorker {
+// SnowflakeWorkerList 节点列表
+func (s *Assembler) SnowflakeWorkerList(dataModels []*entities.SnowflakeWorker) []*snowflakev1.SnowflakeWorker {
 	var newDataModels = make([]*snowflakev1.SnowflakeWorker, len(dataModels))
 	for index := range dataModels {
-		newDataModels[index] = AssembleSnowflakeWorker(dataModels[index])
+		newDataModels[index] = s.SnowflakeWorker(dataModels[index])
 	}
 	return newDataModels
 }
 
-// AssembleSnowflakeWorker assemble SnowflakeWorker
-func AssembleSnowflakeWorker(dataModel *entities.SnowflakeWorker) *snowflakev1.SnowflakeWorker {
+// SnowflakeWorker assemble SnowflakeWorker
+func (s *Assembler) SnowflakeWorker(dataModel *entities.SnowflakeWorker) *snowflakev1.SnowflakeWorker {
 	newDataModel := &snowflakev1.SnowflakeWorker{
 		Id:                   dataModel.Id,                                         // id
 		InstanceExtendTime:   dataModel.InstanceExtendTime.Format(timeutil.YmdHms), // 实例续期时间

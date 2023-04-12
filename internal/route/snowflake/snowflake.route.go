@@ -5,6 +5,7 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/http"
 	snowflakeservicev1 "github.com/ikaiguang/go-snowflake-node-id/api/snowflake-service/v1/services"
 	snowflakeutil "github.com/ikaiguang/go-snowflake-node-id/business-util/snowflake"
+	assemblers "github.com/ikaiguang/go-snowflake-node-id/internal/application/snowflake/assembler"
 	services "github.com/ikaiguang/go-snowflake-node-id/internal/application/snowflake/service"
 	logutil "github.com/ikaiguang/go-srv-kit/log"
 	"github.com/patrickmn/go-cache"
@@ -58,7 +59,9 @@ func RegisterRoutes(engineHandler setup.Engine, hs *http.Server, gs *grpc.Server
 	}
 
 	// 服务
+	assembler := assemblers.NewAssembler()
 	srv := services.NewWorker(
+		assembler,
 		locker,
 		workerRepo,
 	)

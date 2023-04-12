@@ -7,6 +7,7 @@ import (
 	snowflakev1 "github.com/ikaiguang/go-snowflake-node-id/api/snowflake-service/v1/resources"
 	snowflakeservicev1 "github.com/ikaiguang/go-snowflake-node-id/api/snowflake-service/v1/services"
 	snowflakeutil "github.com/ikaiguang/go-snowflake-node-id/business-util/snowflake"
+	assemblers "github.com/ikaiguang/go-snowflake-node-id/internal/application/snowflake/assembler"
 	errorutil "github.com/ikaiguang/go-srv-kit/error"
 	"strings"
 )
@@ -15,16 +16,19 @@ import (
 type worker struct {
 	snowflakeservicev1.UnimplementedSrvSnowflakeWorkerServer
 
+	assembler  *assemblers.Assembler
 	locker     snowflakeutil.Locker
 	workerRepo snowflakeutil.WorkerRepo
 }
 
 // NewWorker ...
 func NewWorker(
+	assembler *assemblers.Assembler,
 	locker snowflakeutil.Locker,
 	workerRepo snowflakeutil.WorkerRepo,
 ) snowflakeservicev1.SrvSnowflakeWorkerServer {
 	return &worker{
+		assembler:  assembler,
 		locker:     locker,
 		workerRepo: workerRepo,
 	}

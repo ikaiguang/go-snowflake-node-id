@@ -7,11 +7,15 @@ import (
 	commonv1 "github.com/ikaiguang/go-snowflake-node-id/api/common/v1"
 	snowflakeerrorv1 "github.com/ikaiguang/go-snowflake-node-id/api/snowflake-service/v1/errors"
 	snowflakev1 "github.com/ikaiguang/go-snowflake-node-id/api/snowflake-service/v1/resources"
-	assemblers "github.com/ikaiguang/go-snowflake-node-id/internal/application/snowflake/assembler"
 	entities "github.com/ikaiguang/go-snowflake-node-id/internal/domain/snowflake/entity"
 	repos "github.com/ikaiguang/go-snowflake-node-id/internal/domain/snowflake/repo"
 	datas "github.com/ikaiguang/go-snowflake-node-id/internal/infra/snowflake/data"
+	confv1 "github.com/ikaiguang/go-srv-kit/api/conf/v1"
+	gormutil "github.com/ikaiguang/go-srv-kit/data/gorm"
+	mysqlutil "github.com/ikaiguang/go-srv-kit/data/mysql"
 	errorutil "github.com/ikaiguang/go-srv-kit/error"
+	timeutil "github.com/ikaiguang/go-srv-kit/kit/time"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -20,6 +24,19 @@ const (
 	DefaultIdleDuration   = 16 * time.Second // 空闲ID时间：超过16s不续期，节点ID变为空闲的ID
 	DefaultExtentDuration = 5 * time.Second  // 续期间隔时间
 )
+
+// WorkerRepo ...
+type WorkerRepo interface {
+	// GetNodeId 获取节点ID
+	GetNodeId(ctx context.Context, req *snowflakev1.GetNodeIdReq) (resp *snowflakev1.SnowflakeWorker, err error)
+	// ExtendNodeId 续期
+	ExtendNodeId(ctx context.Context, req *snowflakev1.ExtendNodeIdReq) (resp *snowflakev1.Result, err error)
+}
+
+// NewMysqlDB ...
+func NewMysqlDB(conf *confv1.Data_MySQL, opts ...gormutil.Option) (db *gorm.DB, err error) {
+	return mysqlutil.NewMysqlDB(conf, opts...)
+}
 
 // worker ...
 type worker struct {
@@ -187,7 +204,7 @@ func (s *worker) getIdleNodeID(ctx context.Context, req *snowflakev1.GetNodeIdRe
 	}
 
 	hasValidID = true
-	resp = assemblers.AssembleSnowflakeWorker(newDataModel)
+	resp = s.assembleSnowflakeWorker(newDataModel)
 	return resp, hasValidID, err
 }
 
@@ -220,7 +237,7 @@ func (s *worker) getLastNodeID(ctx context.Context, req *snowflakev1.GetNodeIdRe
 	}
 
 	hasValidID = true
-	resp = assemblers.AssembleSnowflakeWorker(dataModel)
+	resp = s.assembleSnowflakeWorker(dataModel)
 	return resp, hasValidID, err
 }
 
@@ -244,4 +261,18 @@ func (s *worker) assembleNodeId(ctx context.Context, req *snowflakev1.GetNodeIdR
 	dataModel.InstanceMetadata = string(metadata)
 
 	return dataModel
+}
+
+// assembleSnowflakeWorker assemble SnowflakeWorker
+func (s *worker) assembleSnowflakeWorker(dataModel *entities.SnowflakeWorker) *snowflakev1.SnowflakeWorker {
+	newDataModel := &snowflakev1.SnowflakeWorker{
+		Id:                   dataModel.Id,                                         // id
+		InstanceExtendTime:   dataModel.InstanceExtendTime.Format(timeutil.YmdHms), // 实例续期时间
+		InstanceId:           dataModel.InstanceId,                                 // 实例ID
+		NodeId:               dataModel.SnowflakeNodeId,                            // 雪花算法节点id
+		InstanceName:         dataModel.InstanceName,                               // 实例名称
+		InstanceEndpointList: dataModel.InstanceEndpointList,                       // 实例端点数组
+		InstanceMetadata:     dataModel.InstanceMetadata,                           // 实例元数据
+	}
+	return newDataModel
 }

@@ -142,6 +142,7 @@ curl -k -X POST \
     -H "Content-Type:application/json" \
     -d '{"instanceId":"test-service"}' \
     http://127.0.0.1:8081/api/v1/node-id/get
+# 响应 id=1, instanceId=test-service, nodeId=1
     
 # 节点续期
 curl -k -X POST \
