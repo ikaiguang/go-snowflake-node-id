@@ -7,6 +7,8 @@ import (
 	snowflakeutil "github.com/ikaiguang/go-snowflake-node-id/business-util/snowflake"
 	assemblers "github.com/ikaiguang/go-snowflake-node-id/internal/application/snowflake/assembler"
 	services "github.com/ikaiguang/go-snowflake-node-id/internal/application/snowflake/service"
+	srvs "github.com/ikaiguang/go-snowflake-node-id/internal/domain/snowflake/service"
+	datas "github.com/ikaiguang/go-snowflake-node-id/internal/infra/snowflake/data"
 	logutil "github.com/ikaiguang/go-srv-kit/log"
 	"github.com/patrickmn/go-cache"
 	stdlog "log"
@@ -26,24 +28,8 @@ func RegisterRoutes(engineHandler setup.Engine, hs *http.Server, gs *grpc.Server
 		return
 	}
 
-	// node-id
+	// config
 	nodeIDConfig := engineHandler.SnowflakeNodeIDConfig()
-	var workerOpts = []snowflakeutil.Option{
-		snowflakeutil.WithDBConn(dbConn),
-	}
-	if nodeIDConfig != nil {
-		if nodeIDConfig.MaxNodeId > 0 {
-			workerOpts = append(workerOpts, snowflakeutil.WithMaxNodeID(nodeIDConfig.MaxNodeId))
-		}
-		if d := nodeIDConfig.IdleDuration.AsDuration(); d > 0 {
-			workerOpts = append(workerOpts, snowflakeutil.WithIdleDuration(d))
-		}
-	}
-	workerRepo, err := snowflakeutil.NewWorker(workerOpts...)
-	if err != nil {
-		logutil.Fatal(err)
-		return
-	}
 
 	// cache
 	var locker snowflakeutil.Locker
@@ -58,13 +44,19 @@ func RegisterRoutes(engineHandler setup.Engine, hs *http.Server, gs *grpc.Server
 		locker = snowflakeutil.NewLockerFromRedis(redisCC)
 	}
 
+	// repos
+	snowflakeWorkerRepo := datas.NewSnowflakeWorkerRepo(dbConn)
+
+	snowflakeOptions := srvs.Options{
+		MaxNodeID:    nodeIDConfig.MaxNodeId,
+		IdleDuration: nodeIDConfig.IdleDuration.AsDuration(),
+	}
+	snowflakeSrv := srvs.NewSnowflakeSrv(snowflakeOptions, locker, snowflakeWorkerRepo)
+
 	// 服务
 	assembler := assemblers.NewAssembler()
-	srv := services.NewWorker(
-		assembler,
-		locker,
-		workerRepo,
-	)
+	srv := services.NewWorker(assembler, snowflakeSrv)
+
 	snowflakeservicev1.RegisterSrvSnowflakeWorkerHTTPServer(hs, srv)
 	snowflakeservicev1.RegisterSrvSnowflakeWorkerServer(gs, srv)
 }

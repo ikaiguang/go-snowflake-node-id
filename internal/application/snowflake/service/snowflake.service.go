@@ -2,12 +2,11 @@ package services
 
 import (
 	"context"
-	commonv1 "github.com/ikaiguang/go-snowflake-node-id/api/common/v1"
 	snowflakeerrorv1 "github.com/ikaiguang/go-snowflake-node-id/api/snowflake-service/v1/errors"
 	snowflakev1 "github.com/ikaiguang/go-snowflake-node-id/api/snowflake-service/v1/resources"
 	snowflakeservicev1 "github.com/ikaiguang/go-snowflake-node-id/api/snowflake-service/v1/services"
-	snowflakeutil "github.com/ikaiguang/go-snowflake-node-id/business-util/snowflake"
 	assemblers "github.com/ikaiguang/go-snowflake-node-id/internal/application/snowflake/assembler"
+	srvs "github.com/ikaiguang/go-snowflake-node-id/internal/domain/snowflake/service"
 	errorutil "github.com/ikaiguang/go-srv-kit/error"
 	"strings"
 )
@@ -16,21 +15,18 @@ import (
 type worker struct {
 	snowflakeservicev1.UnimplementedSrvSnowflakeWorkerServer
 
-	assembler  *assemblers.Assembler
-	locker     snowflakeutil.Locker
-	workerRepo snowflakeutil.WorkerRepo
+	assembler    *assemblers.Assembler
+	snowflakeSrv *srvs.SnowflakeSrv
 }
 
 // NewWorker ...
 func NewWorker(
 	assembler *assemblers.Assembler,
-	locker snowflakeutil.Locker,
-	workerRepo snowflakeutil.WorkerRepo,
+	snowflakeSrv *srvs.SnowflakeSrv,
 ) snowflakeservicev1.SrvSnowflakeWorkerServer {
 	return &worker{
-		assembler:  assembler,
-		locker:     locker,
-		workerRepo: workerRepo,
+		assembler:    assembler,
+		snowflakeSrv: snowflakeSrv,
 	}
 }
 
@@ -44,17 +40,11 @@ func (s *worker) GetNodeId(ctx context.Context, in *snowflakev1.GetNodeIdReq) (*
 		return nil, err
 	}
 
-	// 锁
-	unlocker, err := s.locker.Lock(ctx, in.InstanceId)
+	dataModel, err := s.snowflakeSrv.GetNodeId(ctx, in)
 	if err != nil {
-		reason := commonv1.ERROR_INTERNAL_SERVER.String()
-		message := "服务器错误"
-		err = errorutil.InternalServer(reason, message)
 		return nil, err
 	}
-	defer func() { _, _ = unlocker.Unlock(ctx) }()
-
-	return s.workerRepo.GetNodeId(ctx, in)
+	return s.assembler.SnowflakeWorker(dataModel), nil
 }
 
 // ExtendNodeId 续期
@@ -66,5 +56,9 @@ func (s *worker) ExtendNodeId(ctx context.Context, in *snowflakev1.ExtendNodeIdR
 		err := errorutil.NotFound(reason, message)
 		return nil, err
 	}
-	return s.workerRepo.ExtendNodeId(ctx, in)
+	success, err := s.snowflakeSrv.ExtendNodeId(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	return &snowflakev1.Result{Success: success}, nil
 }

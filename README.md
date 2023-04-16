@@ -6,43 +6,6 @@
 
 主要功能：提供全局唯一的**节点ID**
 
-## 使用示例
-
-```text
-
-// WorkerRepo ...
-type WorkerRepo interface {
-	GetNodeId(ctx context.Context, req *apiv1.GetNodeIdReq) (resp *apiv1.SnowflakeWorkerNode, err error)
-	ExtendNodeId(ctx context.Context, req *apiv1.ExtendNodeIdReq) (resp *apiv1.Result, err error)
-}
-
-// ExampleNewWorker ...
-func ExampleNewWorker() {
-	var workerHandler WorkerRepo
-
-	conf := &confv1.Data_MySQL{
-		Dsn:            "root:Mysql.123456@tcp(127.0.0.1:3306)/srv_snowflake?charset=utf8mb4&timeout=30s&parseTime=True&loc=Local",
-		LoggerEnable:   true,
-		LoggerColorful: true,
-		LoggerLevel:    "DEBUG",
-	}
-	dbConn, err := NewMysqlDB(conf)
-	if err != nil {
-		panic(err)
-	}
-	workerHandler, err = NewWorker(
-		WithDBConn(dbConn),
-		WithMaxNodeID(5),
-		WithIdleDuration(16 * time.Second),
-	)
-	if err != nil {
-		panic(err)
-	}
-	_, _ = workerHandler.GetNodeId(context.Background(), nil)
-	_, _ = workerHandler.ExtendNodeId(context.Background(), nil)
-}
-```
-
 ## 数据存储
 
 数据存储组件：数据库
